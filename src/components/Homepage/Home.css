@@ -1,0 +1,17 @@
+.homepage {
+  height: 90vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.homepage-container {
+  padding: 1rem;
+  width: 50%;
+}
+
+.homepage-container h1 {
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 64px;
+}
