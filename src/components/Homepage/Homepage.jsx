@@ -7,8 +7,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-// const url = 'http://45.80.181.87:8080/api/buku';
-const url = 'http://localhost:8080/api/buku';
+const url = 'http://45.80.181.87:8080/api/buku';
+// const url = 'http://localhost:8080/api/buku';
 
 export default function HomepageTable() {
   const [buku, setBuku] = React.useState([]);
