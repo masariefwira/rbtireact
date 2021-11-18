@@ -6,33 +6,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { v4 as uuidv4 } from 'uuid';
 
 // const url = 'http://45.80.181.87:8080/api/buku';
 const url = 'http://localhost:8080/api/buku';
 
-export default function HomepageTable() {
-  const [buku, setBuku] = React.useState([]);
-
-  React.useEffect(() => {
-    let data = {
-      limit: 8,
-      offset: 0,
-    };
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((res) => {
-        let bukuData = res.data;
-        console.log(bukuData);
-        setBuku(bukuData);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
+export default function HomepageAlt({ buku }) {
   return (
     <React.Fragment>
       <TableContainer component={Paper}>
@@ -47,17 +26,17 @@ export default function HomepageTable() {
           </TableHead>
           <TableBody>
             {buku.length > 0
-              ? buku.map(({ judul: book }) => (
+              ? buku.map(({ judul, tahun, penerbit, bahasa }) => (
                   <TableRow
-                    key={book.judul}
+                    key={uuidv4()}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {book.judul}
+                      {judul}
                     </TableCell>
-                    <TableCell align="right">{book.penerbit}</TableCell>
-                    <TableCell align="right">{book.tahun}</TableCell>
-                    <TableCell align="right">{book.bahasa}</TableCell>
+                    <TableCell align="right">{tahun}</TableCell>
+                    <TableCell align="right">{penerbit}</TableCell>
+                    <TableCell align="right">{bahasa}</TableCell>
                   </TableRow>
                 ))
               : null}

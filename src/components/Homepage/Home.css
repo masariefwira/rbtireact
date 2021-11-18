@@ -15,3 +15,9 @@
   font-family: 'Roboto Mono', sans-serif;
   font-size: 64px;
 }
+
+.homepage-container h3 {
+  font-family: 'Roboto Mono', sans-serif;
+  font-size: 18px;
+  text-align: center;
+}

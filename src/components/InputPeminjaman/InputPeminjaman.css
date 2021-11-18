@@ -1,0 +1,22 @@
+/* .input-peminjaman {
+  display: flex;
+} */
+
+.input-peminjaman__form {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.input-peminjaman__field {
+  margin-bottom: 10px !important;
+}
+
+.input-peminjaman__field {
+  margin-top: 10px;
+}
+
+.input-peminjaman__detail {
+  width: 480px;
+  height: 360px;
+}

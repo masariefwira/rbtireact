@@ -1,0 +1,12 @@
+.form-buku {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input__field {
+  margin: 10px !important;
+}
+
+.form-buku__container h2 {
+  font-family: 'Roboto Mono', sans-serif;
+}
