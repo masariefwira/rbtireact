@@ -7,6 +7,8 @@ import NavigationBar from './components/NavigationBar/NavigationBar';
 import InputPeminjaman from './components/InputPeminjaman/InputPeminjaman';
 import PengembalianBuku from './components/PengembalianBuku/PengembalianBuku';
 
+// test dari mac
+
 function App() {
   return (
     <Router>
