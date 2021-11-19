@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import { v4 as uuidv4 } from 'uuid';
 
 // const url = 'http://45.80.181.87:8080/api/buku';
-const url = 'http://localhost:8080/api/buku';
+const url = process.env.REACT_APP_URL + '/api/buku';
 
 export default function HomepageAlt({ buku }) {
   return (

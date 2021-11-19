@@ -14,9 +14,9 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Divider from '@mui/material/Divider';
 
-const url = 'http://localhost:8080/api/buku?idBuku=';
-const urlNim = 'http://localhost:8080/api/mahasiswa?nim=';
-const urlPinjam = 'http://localhost:8080/api/peminjaman';
+const url = process.env.REACT_APP_URL + '/api/buku?idBuku=';
+const urlNim = process.env.REACT_APP_URL + '/api/mahasiswa?nim=';
+const urlPinjam = process.env.REACT_APP_URL + '/api/peminjaman';
 
 var fortnightAway = new Date(Date.now() + 12096e5);
 
@@ -24,17 +24,27 @@ const InputPeminjaman = () => {
   const [buku, setBuku] = useState([]);
   const [isInputId, setIsInputId] = useState(false);
   const [mahasiswa, setMahasiswa] = useState({ nama: 'tidak ditemukan' });
+
+  const revertState = () => {
+    setBuku([])
+    setIsInputId(false)
+    setMahasiswa({nama : 'tidak ditemukan'})
+    formik.setValues(initialValues)
+  }
+
+  const initialValues = {
+    idPeminjaman: '',
+    nimPeminjam: '',
+    tenggatPengembalian: fortnightAway.toDateString(),
+    arrayBuku: [
+      {
+        idBuku: '',
+      },
+    ],
+  }
+
   const formik = useFormik({
-    initialValues: {
-      idPeminjaman: '',
-      nimPeminjam: '',
-      tenggatPengembalian: fortnightAway.toDateString(),
-      arrayBuku: [
-        {
-          idBuku: '',
-        },
-      ],
-    },
+    initialValues: initialValues,
     onSubmit: (values) => {
       handleSubmit(values);
     },
@@ -54,6 +64,8 @@ const InputPeminjaman = () => {
       .then((res) => res.json())
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
+
+      revertState()
   };
 
   const handleAddBuku = (e) => {
@@ -77,7 +89,7 @@ const InputPeminjaman = () => {
     formik.setValues({ ...formik.values, arrayBuku: data });
   };
 
-  const handleGetDetailBuku = (idBuku) => {
+  const handleGetDetailBuku = (idBuku, index) => {
     const formattedUrl = url + idBuku;
     fetch(formattedUrl)
       .then((res) => {
@@ -90,13 +102,20 @@ const InputPeminjaman = () => {
         if (res.status != 404) {
           let temp = [];
           temp = { ...res };
-          console.log(temp);
           let tempArr = [...buku];
           tempArr.push(temp);
           setBuku(tempArr);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err)
+        let tempArr = [...buku];
+        console.log(tempArr)
+          if (tempArr.length > 0) {
+            tempArr.splice(index, 1)
+            setBuku(tempArr);
+          }
+      });
   };
 
   const handleGetDataMahasiswa = (e) => {
@@ -178,7 +197,7 @@ const InputPeminjaman = () => {
                 value={formik.values.arrayBuku[idx].idBuku}
                 onChange={(e) => {
                   formik.handleChange(e);
-                  handleGetDetailBuku(e.currentTarget.value);
+                  handleGetDetailBuku(e.currentTarget.value, idx);
                 }}
                 InputProps={
                   formik.values.arrayBuku.length > 1

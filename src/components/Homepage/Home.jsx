@@ -5,7 +5,8 @@ import HomepageAlt from './HomepageAlt';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const url = 'http://localhost:8080/api/buku/search';
+  const url = process.env.REACT_APP_URL + "/api/buku/search"
+  console.log(url)
 
   const [search, setSearch] = React.useState('');
   const handleInput = (e) => {

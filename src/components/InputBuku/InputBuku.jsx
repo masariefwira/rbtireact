@@ -28,8 +28,8 @@ const InputBuku = () => {
     },
   });
 
-  const url = 'http://localhost:8080/api/kategori';
-  const urlSubmit = 'http://localhost:8080/api/buku';
+  const url = process.env.REACT_APP_URL + '/api/kategori';
+  const urlSubmit = process.env.REACT_APP_URL + '/api/buku';
 
   useEffect(() => {
     fetch(url)

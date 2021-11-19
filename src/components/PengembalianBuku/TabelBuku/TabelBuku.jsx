@@ -7,8 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import Checkbox from '@mui/material/Checkbox';
 
-export default function TabelBuku({ peminjaman }) {
+export default function TabelBuku({ peminjaman, checkboxHandler }) {
+
   return (
     <React.Fragment>
       <Typography
@@ -18,6 +20,7 @@ export default function TabelBuku({ peminjaman }) {
         <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
           <TableHead>
             <TableRow>
+              <TableCell>ID Buku</TableCell>
               <TableCell>Judul</TableCell>
               <TableCell align="right">Penerbit</TableCell>
               <TableCell align="right">Tahun</TableCell>
@@ -30,9 +33,12 @@ export default function TabelBuku({ peminjaman }) {
             {'buku_dipinjam' in peminjaman
               ? peminjaman.buku_dipinjam.map((row) => (
                   <TableRow
-                    key={row.id_peminjaman}
+                    key={row.id_buku}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
+                    <TableCell component="th" scope="row" sx={{ width: 100 }}>
+                      {row.id_buku}
+                    </TableCell>
                     <TableCell component="th" scope="row" sx={{ width: 250 }}>
                       {row.judul}
                     </TableCell>
@@ -46,10 +52,14 @@ export default function TabelBuku({ peminjaman }) {
                       {peminjaman.tanggal_peminjaman}
                     </TableCell>
                     <TableCell align="right" sx={{ width: 150 }}>
-                      {peminjaman.denda}
+                      {peminjaman.denda === 0 ? "-" : `Rp. ${peminjaman.denda}`}
                     </TableCell>
                     <TableCell align="right" sx={{ width: 150 }}>
-                      status
+                      <Checkbox 
+                        onChange={(e) => {
+                            checkboxHandler(e, row.id_buku, peminjaman.id_peminjaman)
+                        }}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

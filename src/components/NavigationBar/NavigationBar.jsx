@@ -35,6 +35,11 @@ export default function NavigationBar() {
       link: '/pengembalian-buku',
       icon: <LibraryBooksIcon />,
     },
+    {
+      text: 'Semua Buku',
+      link: '/semua-buku',
+      icon: <BookIcon />,
+    },
   ];
 
   const list = (anchor) => (
