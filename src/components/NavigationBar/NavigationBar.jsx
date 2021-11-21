@@ -16,6 +16,7 @@ import BookIcon from '@mui/icons-material/Book';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { Link } from 'react-router-dom';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 export default function NavigationBar() {
   const [drawerIsOpen, setDrawerIsOpen] = React.useState(false);
@@ -39,6 +40,11 @@ export default function NavigationBar() {
       text: 'Semua Buku',
       link: '/semua-buku',
       icon: <BookIcon />,
+    },
+    {
+      text: 'Semua Peminjaman',
+      link: '/semua-peminjaman',
+      icon: <AssignmentIcon />,
     },
   ];
 

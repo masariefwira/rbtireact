@@ -6,6 +6,8 @@ import InputBuku from './components/InputBuku/InputBuku';
 import NavigationBar from './components/NavigationBar/NavigationBar';
 import InputPeminjaman from './components/InputPeminjaman/InputPeminjaman';
 import PengembalianBuku from './components/PengembalianBuku/PengembalianBuku';
+import SemuaPeminjaman from './components/SemuaPeminjaman/SemuaPeminjaman';
+import SemuaBuku from './components/SemuaBuku/SemuaBuku';
 
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
         <Route path="/input-buku" element={<InputBuku />} />
         <Route path="/input-peminjaman" element={<InputPeminjaman />} />
         <Route path="/pengembalian-buku" element={<PengembalianBuku />} />
+        <Route path="/semua-peminjaman" element={<SemuaPeminjaman />} />
+        <Route path="/semua-buku" element={<SemuaBuku />} />
       </Routes>
     </Router>
   );

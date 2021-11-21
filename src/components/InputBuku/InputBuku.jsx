@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Container, MenuItem } from '@mui/material';
+import { TextField, Button, Container, MenuItem, Snackbar, Alert } from '@mui/material';
 import { useFormik } from 'formik';
 import './InputBuku.css';
 import Divider from '@mui/material/Divider';
+import { LoadingButton } from '@mui/lab';
 
 const initialValues = {
   judul: {
@@ -20,13 +21,26 @@ const initialValues = {
 const InputBuku = () => {
   const [kategoriData, setKategori] = useState([]);
   const [selectedKategori, setSelectedKategori] = useState('Testing');
+  const [isLoading, setIsLoading] = useState(false)
+  const [afterSave, setAfterSave] = useState(false)
 
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: (values) => {
+      setIsLoading(true)
       handleSubmitEnd(values);
+
+      setIsLoading(false)
+      setAfterSave(true)
+      formik.setValues(initialValues)
     },
   });
+
+  useEffect(() => {
+    if (afterSave) {
+      setTimeout(() => setAfterSave(false), 3000)
+    }
+  }, [afterSave])
 
   const url = process.env.REACT_APP_URL + '/api/kategori';
   const urlSubmit = process.env.REACT_APP_URL + '/api/buku';
@@ -62,7 +76,6 @@ const InputBuku = () => {
     convertedData.judul.jenis = +convertedData.judul.jenis;
     convertedData.jumlah = +convertedData.jumlah;
     const data = JSON.stringify(convertedData);
-    // console.log(data);
     fetch(urlSubmit, {
       method: 'PATCH',
       body: data,
@@ -75,12 +88,16 @@ const InputBuku = () => {
       .catch((err) => console.log(err));
   };
 
+  const jenis = [
+    {value : 1, label : "Bisa dipinjam"},
+    {value : 2, label : "Tidak bisa dipinjam"},
+  ]
+
   const dataToMap = [...kategoriData];
   return (
     <React.Fragment>
       <Container className="form-buku__container">
         <h2 style={{ marginBottom: '10px' }}>Input buku baru</h2>
-        <Divider />
         <form className="form-buku">
           <TextField
             className="form-input__field"
@@ -114,9 +131,16 @@ const InputBuku = () => {
             className="form-input__field"
             value={formik.values.judul.jenis}
             label="Jenis"
+            select
             name="judul.jenis"
             onChange={formik.handleChange}
-          />
+          >
+            {jenis.map((item) => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
             className="form-input__field"
             value={formik.values.judul.penerbit}
@@ -146,11 +170,24 @@ const InputBuku = () => {
             onChange={formik.handleChange}
           />
 
-          <Button variant="contained" onClick={formik.handleSubmit}>
+          <LoadingButton
+            variant="contained"
+            loading={isLoading}
+            onClick={formik.handleSubmit}
+          >
             Submit
-          </Button>
+          </LoadingButton>
         </form>
       </Container>
+      <Snackbar
+        anchorOrigin={{vertical : "bottom", horizontal : "right"}}
+        open={afterSave}
+        autoHideDuration={3000}
+      >
+        <Alert severity="success">
+              Buku berhasil disimpan
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 };

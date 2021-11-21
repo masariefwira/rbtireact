@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 
@@ -11,6 +11,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import TabelBuku from './TabelBuku/TabelBuku';
 import Button from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
+import { Alert, Snackbar } from '@mui/material';
 
 const initialValues = {
   nim: '',
@@ -21,6 +23,9 @@ const PengembalianBuku = () => {
   const [totalDenda, setTotalDenda] = useState('');
   const [idBukuKembali, setIdBukuKembali] = useState([])
   const [mahasiswa, setMahasiswa] = useState("")
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [afterSave, setAfterSave] = useState(false)
 
   const formik = useFormik({
     initialValues,
@@ -33,7 +38,16 @@ const PengembalianBuku = () => {
   const submitUrl = process.env.REACT_APP_URL + '/api/peminjaman'
   const urlNim = process.env.REACT_APP_URL + '/api/mahasiswa?nim=';
 
+  useEffect(() => {
+    if(afterSave) {
+      setTimeout(() => {
+        setAfterSave(false)
+      }, 3000)
+    }
+  }, [afterSave])
+
   const handleGetData = (value) => {
+
     fetch(url, {
       method: 'POST',
       body: JSON.stringify(value),
@@ -60,12 +74,22 @@ const PengembalianBuku = () => {
   };
 
   const handleSubmit = () => {
+    setIsLoading(true)
+
     console.log("SUBMIT")
     let data = {data : idBukuKembali}
     fetch(submitUrl, {
       method : "PATCH",
       body : JSON.stringify(data)
     }).then(res => res.json()).then(res => console.log(res)).catch(err => console.log(err))
+
+    setIsLoading(false)
+    setAfterSave(true)
+
+    setMahasiswa("")
+    setPeminjaman([])
+    setTotalDenda('')
+    setIdBukuKembali([])
   }
 
   const handleCheckbox = (e, idBuku, idPeminjaman) => {
@@ -131,6 +155,7 @@ const PengembalianBuku = () => {
         width: '90%',
         display: 'flex',
         flexDirection: 'column',
+        mb : 10
       }}
       className="pengembalian-buku"
     >
@@ -173,7 +198,17 @@ const PengembalianBuku = () => {
       {peminjaman.map((pinjam) => (
         <TabelBuku peminjaman={pinjam} checkboxHandler={handleCheckbox} />
       ))}
-      {peminjaman.length > 0 ? <Button sx={{mb : 10}} onClick={handleSubmit}>Submit</Button> : null}
+      {peminjaman.length > 0 ? <LoadingButton sx={{mb : 10}} onClick={handleSubmit} variant="contained">Submit</LoadingButton> : null}
+      <Snackbar
+          open={afterSave}
+          anchorOrigin={{vertical : "bottom", horizontal : "right"}}
+        >
+          <Alert
+            severity="success"
+          >
+            Peminjaman berhasil diinput
+          </Alert>
+        </Snackbar>
     </Container>
   );
 };
