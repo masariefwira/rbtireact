@@ -5,8 +5,8 @@ import HomepageAlt from './HomepageAlt';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const url = process.env.REACT_APP_URL + "/api/buku/search"
-  console.log(url)
+  const url = process.env.REACT_APP_URL + '/api/buku/search';
+  console.log(url);
 
   const [search, setSearch] = React.useState('');
   const handleInput = (e) => {
@@ -15,7 +15,7 @@ const Home = () => {
 
   const [data, setData] = React.useState([]);
   const handleSearch = () => {
-    const body = { query: search };
+    const body = { query: search, size: 5 };
     if (search.length < 3) {
       return;
     }

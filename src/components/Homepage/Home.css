@@ -14,6 +14,7 @@
 .homepage-container h1 {
   font-family: 'Roboto Mono', sans-serif;
   font-size: 64px;
+  margin-bottom: 1rem;
 }
 
 .homepage-container h3 {

@@ -51,14 +51,22 @@ function TablePaginationActions(props) {
         disabled={page === 0}
         aria-label="previous page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme.direction === 'rtl' ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme.direction === 'rtl' ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
@@ -98,42 +106,43 @@ const rows = [
   createData('Oreo', 437, 18.0),
 ].sort((a, b) => (a.calories < b.calories ? -1 : 1));
 
-export default function SemuaBukuTable({data, handlePageBerubah, handleRowPerPage, page, rowsPerPage, dataCount : count}) {
-
+export default function SemuaBukuTable({
+  data,
+  handlePageBerubah,
+  handleRowPerPage,
+  page,
+  rowsPerPage,
+  dataCount: count,
+}) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data[0].count) : 0;
 
   return (
-    <TableContainer component={Paper} sx={{mt : 2}}>
-      <Table sx={{ minWidth: 500, minHeight : 500, maxHeight: 500 }} aria-label="custom pagination table">
-          <TableHead>
-              <TableRow>
-                  <TableCell>Judul</TableCell>
-                  <TableCell>Penulis</TableCell>
-                  <TableCell>Penerbit</TableCell>
-                  <TableCell>Tahun</TableCell>
-                  <TableCell>Kategori</TableCell>
-              </TableRow>
-          </TableHead>
+    <TableContainer component={Paper} sx={{ mt: 2 }}>
+      <Table
+        sx={{ minWidth: 500, minHeight: 500, maxHeight: 500 }}
+        aria-label="custom pagination table"
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Judul</TableCell>
+            <TableCell>Penulis</TableCell>
+            <TableCell>Penerbit</TableCell>
+            <TableCell>Tahun</TableCell>
+            <TableCell>Kategori</TableCell>
+          </TableRow>
+        </TableHead>
         <TableBody>
           {data.map((row) => (
             <TableRow key={row.id}>
-              <TableCell scope="row" style={{width : 160}}>
+              <TableCell scope="row" style={{ width: 160 }}>
                 {row.judul}
               </TableCell>
-              <TableCell style={{ width: 160 }}>
-                {row.penulis}
-              </TableCell>
-              <TableCell style={{ width: 160 }}>
-                {row.penerbit}
-              </TableCell>
-              <TableCell style={{ width: 160 }}>
-                {row.id_kategori}
-              </TableCell>
-              <TableCell style={{ width: 160 }}>
-                {row.tahun}
-              </TableCell>
+              <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
+              <TableCell style={{ width: 160 }}>{row.penerbit}</TableCell>
+              <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
+              <TableCell style={{ width: 160 }}>{row.id_kategori}</TableCell>
             </TableRow>
           ))}
 
