@@ -12,6 +12,14 @@ import { v4 as uuidv4 } from 'uuid';
 const url = process.env.REACT_APP_URL + '/api/buku';
 
 export default function HomepageAlt({ buku }) {
+  const handleClickResult = (id, jenis) => {
+    if (jenis.toLowerCase() == 'buku') {
+      window.open(`/detail-buku/${id}`, '_blank');
+    } else {
+      window.open(`/detail-laporan/${jenis}/${id}`, '_blank');
+    }
+  };
+
   return (
     <React.Fragment>
       <TableContainer component={Paper}>
@@ -26,9 +34,10 @@ export default function HomepageAlt({ buku }) {
           </TableHead>
           <TableBody>
             {buku.length > 0
-              ? buku.map(({ judul, tahun, penulis, bahasa, id }) => (
+              ? buku.map(({ judul, tahun, penulis, bahasa, id, tipe }) => (
                   <TableRow
                     key={id}
+                    onClick={() => handleClickResult(id, tipe)}
                     // key={}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >

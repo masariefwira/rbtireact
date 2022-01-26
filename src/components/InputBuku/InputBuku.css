@@ -8,5 +8,14 @@
 }
 
 .form-buku__container h2 {
-  font-family: 'Roboto Mono', sans-serif;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.card-content-mhs {
+  display: flex;
+  align-items: center;
+}
+
+.card-detail-mhs {
+  margin-left: 1rem;
 }

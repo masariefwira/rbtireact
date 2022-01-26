@@ -26,15 +26,15 @@ const InputPeminjaman = () => {
   const [buku, setBuku] = useState([]);
   const [isInputId, setIsInputId] = useState(false);
   const [mahasiswa, setMahasiswa] = useState({ nama: 'tidak ditemukan' });
-  const [isLoading, setIsLoading] = useState(false)
-  const [afterSave, setAfterSave] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [afterSave, setAfterSave] = useState(false);
 
   const revertState = () => {
-    setBuku([])
-    setIsInputId(false)
-    setMahasiswa({nama : 'tidak ditemukan'})
-    formik.setValues(initialValues)
-  }
+    setBuku([]);
+    setIsInputId(false);
+    setMahasiswa({ nama: 'tidak ditemukan' });
+    formik.setValues(initialValues);
+  };
 
   const initialValues = {
     idPeminjaman: '',
@@ -45,26 +45,26 @@ const InputPeminjaman = () => {
         idBuku: '',
       },
     ],
-  }
+  };
 
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: (values) => {
-      setIsLoading(true)
+      setIsLoading(true);
       handleSubmit(values);
 
-      setIsLoading(false)
-      setAfterSave(true)
+      setIsLoading(false);
+      setAfterSave(true);
     },
   });
 
   useEffect(() => {
-    if(afterSave) {
+    if (afterSave) {
       setTimeout(() => {
-        setAfterSave(false)
-      }, 3000)
+        setAfterSave(false);
+      }, 3000);
     }
-  }, [afterSave])
+  }, [afterSave]);
 
   const handleSubmit = (values) => {
     const nim = values.nimPeminjam;
@@ -81,7 +81,7 @@ const InputPeminjaman = () => {
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
 
-      revertState()
+    revertState();
   };
 
   const handleAddBuku = (e) => {
@@ -124,13 +124,13 @@ const InputPeminjaman = () => {
         }
       })
       .catch((err) => {
-        console.log(err)
+        console.log(err);
         let tempArr = [...buku];
-        console.log(tempArr)
-          if (tempArr.length > 0) {
-            tempArr.splice(index, 1)
-            setBuku(tempArr);
-          }
+        console.log(tempArr);
+        if (tempArr.length > 0) {
+          tempArr.splice(index, 1);
+          setBuku(tempArr);
+        }
       });
   };
 
@@ -142,7 +142,7 @@ const InputPeminjaman = () => {
         .then((res) => res.json())
         .then((res) => {
           let data = {};
-          data = { ...res };
+          data = { ...res.data };
           setMahasiswa(data);
         })
         .catch((err) => console.log(err));
@@ -231,26 +231,26 @@ const InputPeminjaman = () => {
               />
             </React.Fragment>
           ))}
-          <Button onClick={(e) => handleAddBuku(e) }variant="outlined">Add Buku</Button>
+          <Button onClick={(e) => handleAddBuku(e)} variant="outlined">
+            Add Buku
+          </Button>
           <LoadingButton
-           onClick={formik.handleSubmit} 
-           sx={{mt : 1}} 
-           variant="contained" 
-           loading={isLoading}>Submit</LoadingButton>
-          
+            onClick={formik.handleSubmit}
+            sx={{ mt: 1 }}
+            variant="contained"
+            loading={isLoading}
+          >
+            Submit
+          </LoadingButton>
         </div>
 
         {/* START DETAIL */}
         <InputPeminjamanDetail data={buku} mahasiswa={mahasiswa} />
         <Snackbar
           open={afterSave}
-          anchorOrigin={{vertical : "bottom", horizontal : "right"}}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          <Alert
-            severity="success"
-          >
-            Peminjaman berhasil diinput
-          </Alert>
+          <Alert severity="success">Peminjaman berhasil diinput</Alert>
         </Snackbar>
       </Container>
     </React.Fragment>
