@@ -19,24 +19,25 @@ export default function HomepageAlt({ buku }) {
           <TableHead>
             <TableRow>
               <TableCell>Judul</TableCell>
-              <TableCell align="right">Penerbit</TableCell>
+              <TableCell align="right">Penulis</TableCell>
               <TableCell align="right">Tahun</TableCell>
               <TableCell align="right">Bahasa</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {buku.length > 0
-              ? buku.map(({ judul, tahun, penerbit, bahasa }) => (
+              ? buku.map(({ judul, tahun, penulis, bahasa, id }) => (
                   <TableRow
-                    key={uuidv4()}
+                    key={id}
+                    // key={}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
                       {judul}
                     </TableCell>
+                    <TableCell align="right">{penulis}</TableCell>
                     <TableCell align="right">{tahun}</TableCell>
-                    <TableCell align="right">{penerbit}</TableCell>
-                    <TableCell align="right">{bahasa}</TableCell>
+                    <TableCell align="right">Indonesia</TableCell>
                   </TableRow>
                 ))
               : null}

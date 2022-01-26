@@ -8,6 +8,7 @@ import InputPeminjaman from './components/InputPeminjaman/InputPeminjaman';
 import PengembalianBuku from './components/PengembalianBuku/PengembalianBuku';
 import SemuaPeminjaman from './components/SemuaPeminjaman/SemuaPeminjaman';
 import SemuaBuku from './components/SemuaBuku/SemuaBuku';
+import DetailBuku from './components/DetailBuku/DetailBuku';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/pengembalian-buku" element={<PengembalianBuku />} />
         <Route path="/semua-peminjaman" element={<SemuaPeminjaman />} />
         <Route path="/semua-buku" element={<SemuaBuku />} />
+        <Route path="/detail-buku/:id" element={<DetailBuku />} />
       </Routes>
     </Router>
   );

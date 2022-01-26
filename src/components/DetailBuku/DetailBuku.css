@@ -1,0 +1,15 @@
+.detail-buku {
+    min-width: 90% !important;
+}
+
+.detail-buku-content {
+    margin-top: 1rem;
+}
+
+.detail-buku-content h4 {
+    margin-bottom: 1rem;
+}
+
+.detail-buku-jumlah {
+    margin-top: 1rem;
+}

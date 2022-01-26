@@ -122,6 +122,7 @@ const SemuaPeminjaman = () => {
     }
 
     const handleFilterChange = (e) => {
+        setPage(0)
         setFilter(e.target.value)
     }
 

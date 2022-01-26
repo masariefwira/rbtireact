@@ -1,0 +1,7 @@
+.row-table-buku {
+    cursor: pointer;
+}
+
+.row-table-buku:hover {
+    background-color: #d3d3d3;
+}
