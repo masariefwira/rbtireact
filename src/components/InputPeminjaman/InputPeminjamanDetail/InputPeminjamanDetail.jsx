@@ -54,6 +54,7 @@ const InputPeminjamanDetail = ({ data, mahasiswa }) => {
         {data &&
           data.map(({ id, judul }, idx) => (
             <Paper
+              key={id}
               elevation={0}
               sx={{
                 width: '100%',

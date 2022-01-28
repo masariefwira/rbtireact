@@ -51,7 +51,7 @@ const InputMenu = () => {
         {jenis === 'Buku' ? (
           <InputBuku></InputBuku>
         ) : (
-          <InputLaporan></InputLaporan>
+          <InputLaporan jenis={jenis}></InputLaporan>
         )}
       </Container>
     </React.Fragment>

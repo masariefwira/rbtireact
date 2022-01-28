@@ -8,26 +8,41 @@ import {
   Alert,
   Typography,
   InputAdornment,
+  Modal,
+  Box,
 } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Button from '@mui/material/Button';
 import CancelIcon from '@mui/icons-material/Cancel';
+import InputMahasiswa from '../InputMahasiswa/InputMahasiswa';
+import * as Yup from 'yup';
 
-const InputLaporan = () => {
+const InputLaporan = ({ jenis: jenisBuku }) => {
   const [afterSave, setAfterSave] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+    isError: false,
+    error: '',
+  });
   const [kategoriData, setKategori] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [foundMahasiswa, setFoundMahasiswa] = useState('init');
   const [mahasiswa, setMahasiswa] = useState({});
+  const [openModal, setOpenModal] = useState(false);
 
   const initialValues = {
     id_kategori: null,
     judul: '',
     nim: '',
   };
+
+  const laporanSchema = Yup.object().shape({
+    id_kategori: Yup.number().required('ID Kategori harus diisi'),
+    judul: Yup.string().required('Judul harus diisi'),
+    nim: Yup.number().required('NIM harus diisi'),
+  });
+
   const url = process.env.REACT_APP_URL + '/api/kategori';
 
   useEffect(() => {
@@ -58,11 +73,37 @@ const InputLaporan = () => {
       }
       handleSubmitEnd(values);
     },
-    // validationSchema: bukuSchema,
+    validationSchema: laporanSchema,
   });
 
   const handleSubmitEnd = (values) => {
-    console.log(values);
+    const url = process.env.REACT_APP_URL + '/api/laporan';
+    let body = JSON.stringify({
+      nim: values.nim,
+      id_kategori: parseInt(values.id_kategori),
+      jenis: jenisBuku,
+      judul: values.judul,
+    });
+
+    fetch(url, {
+      body: body,
+      method: 'POST',
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        if (res.errors !== null && res?.errors?.length > 0) {
+          throw new Error(res.errors[0]);
+        }
+        setAfterSave(true);
+      })
+      .catch((err) => {
+        setError({
+          isError: true,
+          error: err.toString(),
+        });
+      });
   };
 
   const handleSelectChange = (event) => {
@@ -117,7 +158,13 @@ const InputLaporan = () => {
                 Mahasiswa dengan NIM tersebut tidak ditemukan!
               </Typography>
               <Typography style={{ fontWeight: 'bold' }}>
-                Cek kembali atau input nama mahasiswa disini
+                Cek kembali atau input nama mahasiswa{' '}
+                <span
+                  style={{ cursor: 'pointer', color: '#00308F' }}
+                  onClick={() => setOpenModal(true)}
+                >
+                  disini
+                </span>
               </Typography>
             </div>
           </CardContent>
@@ -157,7 +204,6 @@ const InputLaporan = () => {
               <InputAdornment>
                 <Button
                   onClick={() => {
-                    // console.log(formik.values?.nim);
                     fetchDataMahasiswa(formik.values?.nim);
                   }}
                 >
@@ -167,7 +213,9 @@ const InputLaporan = () => {
             ),
           }}
           onChange={(e) => {
-            setFoundMahasiswa('not');
+            if (foundMahasiswa != 'init') {
+              setFoundMahasiswa('not');
+            }
             formik.handleChange(e);
           }}
           onBlur={formik.handleBlur}
@@ -178,6 +226,12 @@ const InputLaporan = () => {
               : null
           }
         ></TextField>
+        <ModalMahasiswa
+          open={openModal}
+          handleClose={() => {
+            setOpenModal(false);
+          }}
+        />
         <TextField
           className="form-input__field"
           select
@@ -203,7 +257,11 @@ const InputLaporan = () => {
         <LoadingButton
           variant="contained"
           loading={isLoading}
-          disabled={!formik.isValid}
+          disabled={
+            !formik.isValid ||
+            foundMahasiswa === 'not' ||
+            foundMahasiswa === 'init'
+          }
           onClick={formik.handleSubmit}
         >
           Submit
@@ -218,12 +276,33 @@ const InputLaporan = () => {
       </Snackbar>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={error}
+        open={error.isError}
         autoHideDuration={2000}
       >
-        <Alert severity="error">Gagal menyimpan buku</Alert>
+        <Alert severity="error">{`Gagal menyimpan buku ${error.error}`}</Alert>
       </Snackbar>
     </React.Fragment>
+  );
+};
+
+const ModalMahasiswa = (props) => {
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+  };
+
+  return (
+    <Modal open={props.open} onClose={props.handleClose}>
+      <Box sx={style}>
+        <InputMahasiswa></InputMahasiswa>
+      </Box>
+    </Modal>
   );
 };
 

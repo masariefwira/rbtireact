@@ -1,31 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   TextField,
-  Button,
-  Container,
   MenuItem,
   Snackbar,
   Alert,
+  Typography,
+  InputAdornment,
+  Button,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import './InputBuku.css';
-import Divider from '@mui/material/Divider';
 import { LoadingButton } from '@mui/lab';
 
 import * as Yup from 'yup';
-
-const initialValues = {
-  judul: {
-    judul: '',
-    tahun: '',
-    penerbit: '',
-    penulis: '',
-    bahasa: '',
-    jenis: '',
-    id_kategori: '',
-  },
-  jumlah: '',
-};
+import { ThemeCustomContext } from './../../util/theme-context';
 
 const bukuSchema = Yup.object().shape({
   judul: Yup.object().shape({
@@ -54,20 +42,36 @@ const bukuSchema = Yup.object().shape({
     jenis: Yup.number().required('Jenis harus diisi!'),
     id_kategori: Yup.number().required('Kategori harus diisi!'),
   }),
-  jumlah: Yup.number()
-    .required('Jumlah wajib diisi')
-    .max(10, 'Jumlah tidak boleh lebih dari 10'),
+  // jumlah: Yup.number()
+  //   .required('Jumlah wajib diisi')
+  //   .max(10, 'Jumlah tidak boleh lebih dari 10'),
 });
 
 const InputBuku = () => {
   const [kategoriData, setKategori] = useState([]);
-  const [selectedKategori, setSelectedKategori] = useState('Testing');
   const [isLoading, setIsLoading] = useState(false);
   const [afterSave, setAfterSave] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+    isError: false,
+    error: '',
+  });
+  const [inputIdBuku, setInputIdBuku] = useState(true);
+  const [initialValues, setInitialValues] = useState({
+    judul: {
+      judul: '',
+      tahun: '',
+      penerbit: '',
+      penulis: '',
+      bahasa: '',
+      jenis: '',
+      id_kategori: '',
+    },
+    jumlah: '',
+  });
 
   const formik = useFormik({
     initialValues: initialValues,
+    enableReinitialize: true,
     onSubmit: (values) => {
       if (!formik.isValid) {
         return;
@@ -83,17 +87,31 @@ const InputBuku = () => {
     }
   }, [afterSave]);
 
+  console.log(formik.errors);
+
   const url = process.env.REACT_APP_URL + '/api/kategori';
   const urlSubmit = process.env.REACT_APP_URL + '/api/buku';
 
+  const themeCustom = useContext(ThemeCustomContext);
+
   useEffect(() => {
     fetch(url)
-      .then((res) => res.json())
       .then((res) => {
+        if (res.status >= 404) {
+          throw new Error('Ada gangguan! Coba lagi lain waktu');
+        }
+        return res.json();
+      })
+      .then((res) => {
+        if (res.errors !== null && res.errors?.length > 0) {
+          throw new Error(res.errors[0]);
+        }
         let dataMap = mapData(res);
         setKategori([...dataMap]);
       })
       .catch((err) => console.log(err));
+
+    themeCustom.changeShowImage(false);
   }, []);
 
   let mapData = (input) => {
@@ -114,7 +132,18 @@ const InputBuku = () => {
     const convertedData = { ...values };
     convertedData.judul.tahun = +convertedData.judul.tahun;
     convertedData.judul.jenis = +convertedData.judul.jenis;
-    convertedData.jumlah = +convertedData.jumlah;
+    console.log(convertedData.idBuku);
+    if (!inputIdBuku) {
+      let arrIdBuku = [];
+      for (let id of convertedData.idBuku) {
+        console.log(id);
+        arrIdBuku.push(+id);
+      }
+      convertedData.judul.id_buku = arrIdBuku;
+      delete convertedData['idBuku'];
+    } else {
+      convertedData.jumlah = +convertedData.jumlah;
+    }
     const data = JSON.stringify(convertedData);
     setIsLoading(true);
     fetch(urlSubmit, {
@@ -122,31 +151,117 @@ const InputBuku = () => {
       body: data,
     })
       .then((res) => {
-        console.log(res);
+        if (res.status >= 404) {
+          throw new Error('Mohon maaf ada gangguan, coba lagi lain waktu');
+        }
         return res.json();
       })
       .then((res) => {
+        if (res.errors !== null && res.errors?.length > 0) {
+          throw new Error(res.errors[0]);
+        }
         setIsLoading(false);
         setAfterSave(true);
         formik.handleReset();
       })
       .catch((err) => {
         setIsLoading(false);
-        setError(true);
+        setError({ error: err, isError: true });
         setTimeout(() => {
           setError(false);
         }, 1000);
       });
   };
 
+  const changeInputHandler = (e) => {
+    let IsGenerateId = e.target.value;
+    console.log(`IS GENERATE ID ${e.target.value}`);
+    if (IsGenerateId) {
+      let initVal = {
+        judul: {
+          judul: '',
+          tahun: '',
+          penerbit: '',
+          penulis: '',
+          bahasa: '',
+          jenis: '',
+          id_kategori: '',
+        },
+        jumlah: '',
+      };
+      setInitialValues(initVal);
+    } else {
+      let initVal = {
+        judul: {
+          judul: '',
+          tahun: '',
+          penerbit: '',
+          penulis: '',
+          bahasa: '',
+          jenis: '',
+          id_kategori: '',
+        },
+        idBuku: [''],
+      };
+      console.log(initVal);
+      setInitialValues(initVal);
+    }
+    setInputIdBuku(IsGenerateId);
+  };
+
   const jenis = [
     { value: 1, label: 'Bisa dipinjam' },
     { value: 2, label: 'Tidak bisa dipinjam' },
   ];
+
+  const opsiInput = [
+    { value: false, label: 'Input ID Buku (Barcode)' },
+    { value: true, label: 'Generate ID Buku' },
+  ];
+
+  const handleAddBuku = (e) => {
+    const data = [...formik.values.idBuku];
+    data.push('');
+
+    formik.setValues({ ...formik.values, idBuku: data });
+  };
+
   const dataToMap = [...kategoriData];
+  console.log(`FORMIK VALUES ${initialValues.idBuku}`);
   return (
     <React.Fragment>
       <form className="form-buku">
+        <div className="keterangan-form-buku form-input__field">
+          <Typography style={{ fontWeight: 'bold' }}>KETERANGAN</Typography>
+          <Typography>
+            Pilih opsi input ID Buku, apabila opsi generate dipilih maka sistem
+            akan generate ID Buku berdasarkan jumlah <br></br>
+            Apabila opsi input lewat barcode dipilih, silakan input ID Buku
+            menggunakan barcode scanner
+          </Typography>
+        </div>
+
+        <TextField
+          className="form-input__field"
+          select
+          value={inputIdBuku}
+          onChange={(e) => changeInputHandler(e)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment>
+                <Typography style={{ marginRight: '10px' }}>
+                  INPUT ID BUKU
+                </Typography>
+              </InputAdornment>
+            ),
+          }}
+        >
+          {opsiInput.map((opsi) => (
+            <MenuItem value={opsi.value} id={opsi.value}>
+              {opsi.label}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           className="form-input__field"
           value={formik.values.judul.judul}
@@ -265,21 +380,42 @@ const InputBuku = () => {
               : null
           }
         />
-        <TextField
-          className="form-input__field"
-          value={formik.values.jumlah}
-          label="Jumlah"
-          name="jumlah"
-          onChange={formik.handleChange}
-          error={formik.errors.jumlah && formik.touched.jumlah}
-          onBlur={formik.handleBlur}
-          helperText={
-            formik.errors?.jumlah && formik.touched?.jumlah
-              ? formik.errors?.jumlah
-              : null
-          }
-        />
-
+        {inputIdBuku ? (
+          <TextField
+            className="form-input__field"
+            value={formik.values.jumlah}
+            label="Jumlah"
+            name="jumlah"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.errors.jumlah && formik.touched.jumlah}
+            helperText={
+              formik.errors?.jumlah && formik.touched?.jumlah
+                ? formik.errors?.jumlah
+                : null
+            }
+          />
+        ) : (
+          formik.values?.idBuku?.map((field, index) => (
+            <TextField
+              className="form-input__field"
+              value={formik.values?.idBuku[index]}
+              label={`ID Buku #${index + 1}`}
+              name={`idBuku[${index}]`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+            />
+          ))
+        )}
+        {!inputIdBuku ? (
+          <Button
+            variant="contained"
+            onClick={(e) => handleAddBuku(e)}
+            style={{ marginBottom: '10px' }}
+          >
+            Add Buku
+          </Button>
+        ) : null}
         <LoadingButton
           variant="contained"
           loading={isLoading}
@@ -298,10 +434,10 @@ const InputBuku = () => {
       </Snackbar>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={error}
+        open={error.isError}
         autoHideDuration={2000}
       >
-        <Alert severity="error">Gagal menyimpan buku</Alert>
+        <Alert severity="error">{`Gagal menyimpan buku ${error.error.toString()}`}</Alert>
       </Snackbar>
     </React.Fragment>
   );

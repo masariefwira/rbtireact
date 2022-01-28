@@ -17,8 +17,7 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import { TableHead } from '@mui/material';
 import { useNavigate } from 'react-router';
-import "./SemuaBukuTable.css"
-
+import './SemuaBukuTable.css';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -89,21 +88,19 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-
-
 export default function SemuaBukuTable({
   data,
   handlePageBerubah,
   handleRowPerPage,
   page,
   rowsPerPage,
-  dataCount: count,
+  count,
 }) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data[0].count) : 0;
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -122,14 +119,18 @@ export default function SemuaBukuTable({
         </TableHead>
         <TableBody>
           {data.map((row) => (
-            <TableRow key={row.id} onClick={() => window.open(`/detail-buku/${row.id}`, "_blank")} className="row-table-buku">
+            <TableRow
+              key={row.id}
+              onClick={() => window.open(`/detail-buku/${row.id}`, '_blank')}
+              className="row-table-buku"
+            >
               <TableCell scope="row" style={{ width: 160 }}>
                 {row.judul}
               </TableCell>
               <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
               <TableCell style={{ width: 160 }}>{row.penerbit}</TableCell>
               <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
-              <TableCell style={{ width: 160 }}>{row.id_kategori}</TableCell>
+              <TableCell style={{ width: 160 }}>{row.kategori}</TableCell>
             </TableRow>
           ))}
 
@@ -144,7 +145,7 @@ export default function SemuaBukuTable({
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
               colSpan={3}
-              count={data[0].count}
+              count={count}
               rowsPerPage={rowsPerPage}
               page={page}
               SelectProps={{

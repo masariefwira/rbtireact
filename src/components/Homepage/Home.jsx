@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import './Home.css';
 import SearchBar from './Search';
 import HomepageAlt from './HomepageAlt';
 import { Link } from 'react-router-dom';
+import { ThemeCustomContext } from './../../util/theme-context';
 
 const Home = () => {
   const url = process.env.REACT_APP_URL + '/api/buku/search';
   console.log(url);
+
+  const themeCustom = useContext(ThemeCustomContext);
+  useEffect(() => {
+    themeCustom.changeShowImage(true);
+  }, []);
 
   const [search, setSearch] = React.useState('');
   const handleInput = (e) => {
@@ -45,8 +51,8 @@ const Home = () => {
     <React.Fragment>
       <div className="homepage">
         <div className="homepage-container">
-          <h1>
-            List buku <br /> RBTI
+          <h1 style={{ textAlign: 'center', color: 'white' }}>
+            List Buku <br /> Ruang Baca Teknik Industri
           </h1>
           <SearchBar inputHandler={handleInput} query={search} />
           {/* <HomepageTable></HomepageTable> */}

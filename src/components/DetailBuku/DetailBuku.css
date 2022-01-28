@@ -1,15 +1,22 @@
 .detail-buku {
-    min-width: 90% !important;
+  min-width: 90% !important;
 }
 
 .detail-buku-content {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .detail-buku-content h4 {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .detail-buku-jumlah {
-    margin-top: 1rem;
+  margin-top: 1rem;
+}
+
+.header-detail-buku {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }

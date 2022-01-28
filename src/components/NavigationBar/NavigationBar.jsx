@@ -17,6 +17,7 @@ import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { Link } from 'react-router-dom';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { ThemeCustomContext } from './../../util/theme-context';
 
 export default function NavigationBar() {
   const [drawerIsOpen, setDrawerIsOpen] = React.useState(false);
@@ -46,6 +47,11 @@ export default function NavigationBar() {
       link: '/semua-peminjaman',
       icon: <AssignmentIcon />,
     },
+    {
+      text: 'Input Mahasiswa',
+      link: '/input-mahasiswa',
+      icon: <ControlPointIcon />,
+    },
   ];
 
   const list = (anchor) => (
@@ -73,9 +79,16 @@ export default function NavigationBar() {
     setDrawerIsOpen(!drawerIsOpen);
   };
 
+  const themeCustom = React.useContext(ThemeCustomContext);
+
+  let style = {};
+  if (themeCustom.showImage) {
+    style = { backgroundColor: 'transparent', boxShadow: '0px 0px' };
+  }
+
   return (
     <Box sx={{ flexGrow: 1, mb: 3 }}>
-      <AppBar position="static">
+      <AppBar position="static" style={style}>
         <Drawer anchor={'left'} open={drawerIsOpen} onClose={toggleDrawer}>
           {list('left')}
         </Drawer>

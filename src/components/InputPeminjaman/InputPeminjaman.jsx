@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import './InputPeminjaman.css';
 import InputPeminjamanDetail from './InputPeminjamanDetail/InputPeminjamanDetail';
@@ -15,6 +15,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Divider from '@mui/material/Divider';
 import { LoadingButton } from '@mui/lab';
 import { Alert, Snackbar } from '@mui/material';
+import { ThemeCustomContext } from './../../util/theme-context';
 
 const url = process.env.REACT_APP_URL + '/api/buku?idBuku=';
 const urlNim = process.env.REACT_APP_URL + '/api/mahasiswa?nim=';
@@ -28,6 +29,10 @@ const InputPeminjaman = () => {
   const [mahasiswa, setMahasiswa] = useState({ nama: 'tidak ditemukan' });
   const [isLoading, setIsLoading] = useState(false);
   const [afterSave, setAfterSave] = useState(false);
+  const [error, setError] = useState({
+    isError: false,
+    error: '',
+  });
 
   const revertState = () => {
     setBuku([]);
@@ -35,6 +40,11 @@ const InputPeminjaman = () => {
     setMahasiswa({ nama: 'tidak ditemukan' });
     formik.setValues(initialValues);
   };
+
+  const themeCustom = useContext(ThemeCustomContext);
+  useEffect(() => {
+    themeCustom.changeShowImage(false);
+  }, []);
 
   const initialValues = {
     idPeminjaman: '',
@@ -78,8 +88,14 @@ const InputPeminjaman = () => {
       body: JSON.stringify(data),
     })
       .then((res) => res.json())
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .then((res) => {
+        if (res?.errors !== null && res.errors?.length > 0) {
+          throw new Error(res.errors[0]);
+        }
+      })
+      .catch((err) => {
+        setError({ isError: true, error: err.toString() });
+      });
 
     revertState();
   };
@@ -106,6 +122,13 @@ const InputPeminjaman = () => {
   };
 
   const handleGetDetailBuku = (idBuku, index) => {
+    // reset to empty
+    if (buku.length > index) {
+      if (idBuku === buku[index].idBuku) {
+        return;
+      }
+    }
+
     const formattedUrl = url + idBuku;
     fetch(formattedUrl)
       .then((res) => {
@@ -117,7 +140,7 @@ const InputPeminjaman = () => {
       .then((res) => {
         if (res.status != 404) {
           let temp = [];
-          temp = { ...res };
+          temp = { ...res, idBuku };
           let tempArr = [...buku];
           tempArr.push(temp);
           setBuku(tempArr);
@@ -134,22 +157,54 @@ const InputPeminjaman = () => {
       });
   };
 
-  const handleGetDataMahasiswa = (e) => {
-    formik.handleChange(e);
-    if (e.currentTarget.value.length === 15) {
-      const populatedUrl = urlNim + e.currentTarget.value;
-      fetch(populatedUrl)
-        .then((res) => res.json())
-        .then((res) => {
-          let data = {};
-          data = { ...res.data };
-          setMahasiswa(data);
-        })
-        .catch((err) => console.log(err));
-    } else {
-      let data = { nama: 'Data mahasiswa tidak ditemukan' };
-      setMahasiswa(data);
-    }
+  const handleGetDataMahasiswa = (nim) => {
+    let populatedUrl = urlNim + nim;
+    fetch(populatedUrl)
+      .then((res) => res.json())
+      .then((res) => {
+        let data = {};
+        data = { ...res.data };
+        if (data.errors !== null && data.errors?.length > 0) {
+          throw new Error('data dari nomor induk tidak ditemukan');
+        }
+        setMahasiswa(data);
+      })
+      .catch((err) => setMahasiswa({ nama: err }));
+  };
+
+  const fetchIDPeminjamanAndPopulate = () => {
+    const urlFetchPeminjaman =
+      process.env.REACT_APP_URL + '/api/peminjaman/detail';
+    let reqBody = JSON.stringify({
+      id_peminjaman: +formik.values.idPeminjaman,
+    });
+
+    fetch(urlFetchPeminjaman, {
+      method: 'POST',
+      body: reqBody,
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.errors !== null && res.errors?.length > 0) {
+          throw new Error(res.errors[0]);
+        }
+
+        formik.setFieldValue('nimPeminjam', res.data?.nim);
+
+        let idBuku = [];
+        let index = 0;
+        for (let idBukuFetch of res.data?.buku_dipinjam) {
+          let temp = {};
+          temp['idBuku'] = idBukuFetch?.id_buku;
+          handleGetDetailBuku(idBukuFetch?.id_buku, index);
+          idBuku.push(temp);
+          index++;
+        }
+        formik.setFieldValue('arrayBuku', idBuku);
+
+        handleGetDataMahasiswa(res.data?.nim);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -186,6 +241,11 @@ const InputPeminjaman = () => {
               ),
             }}
           />
+          {isInputId ? (
+            <Button variant="contained" onClick={fetchIDPeminjamanAndPopulate}>
+              CARI ID
+            </Button>
+          ) : null}
           <Divider sx={{ mt: 3, mb: 5 }} />
           <TextField
             label="NIM Peminjam"
@@ -193,7 +253,11 @@ const InputPeminjaman = () => {
             name="nimPeminjam"
             disabled={isInputId}
             value={formik.values.nimPeminjam}
-            onChange={(e) => handleGetDataMahasiswa(e)}
+            onChange={formik.handleChange}
+            onBlur={(e) => {
+              formik.handleBlur(e);
+              handleGetDataMahasiswa(e.target.value);
+            }}
           />
           <TextField
             label="Tenggat Pengembalian"
@@ -213,6 +277,8 @@ const InputPeminjaman = () => {
                 value={formik.values.arrayBuku[idx].idBuku}
                 onChange={(e) => {
                   formik.handleChange(e);
+                }}
+                onBlur={(e) => {
                   handleGetDetailBuku(e.currentTarget.value, idx);
                 }}
                 InputProps={
@@ -251,6 +317,13 @@ const InputPeminjaman = () => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
           <Alert severity="success">Peminjaman berhasil diinput</Alert>
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          open={error.isError}
+          autoHideDuration={2000}
+        >
+          <Alert severity="error">{`Gagal membuat peminjaman ${error.error}`}</Alert>
         </Snackbar>
       </Container>
     </React.Fragment>
