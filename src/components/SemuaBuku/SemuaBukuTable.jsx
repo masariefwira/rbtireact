@@ -95,12 +95,17 @@ export default function SemuaBukuTable({
   page,
   rowsPerPage,
   count,
+  jenis,
 }) {
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data[0].count) : 0;
 
   const navigate = useNavigate();
+  let link = '/detail-buku/';
+  if (jenis !== 'buku') {
+    link = `/detail-laporan/${jenis}/`;
+  }
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -121,7 +126,7 @@ export default function SemuaBukuTable({
           {data.map((row) => (
             <TableRow
               key={row.id}
-              onClick={() => window.open(`/detail-buku/${row.id}`, '_blank')}
+              onClick={() => window.open(link + `${row.id}`, '_blank')}
               className="row-table-buku"
             >
               <TableCell scope="row" style={{ width: 160 }}>

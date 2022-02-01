@@ -56,7 +56,10 @@ const EditBuku = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [afterSave, setAfterSave] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState({
+    isError: false,
+    error: '',
+  });
   const [bukuData, setBukuData] = useState({
     judul: {
       judul: '',
@@ -69,6 +72,7 @@ const EditBuku = () => {
     },
     jumlah: '',
   });
+  const [openDelete, setOpenDelete] = useState(false);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -143,6 +147,37 @@ const EditBuku = () => {
     formik.setFieldValue('judul.id_kategori', event.target.value);
   };
 
+  const handleDeleteBuku = async () => {
+    const urlDelete = process.env.REACT_APP_URL + '/api/buku';
+    const body = JSON.stringify({
+      id: parseInt(params?.id),
+      jenis: 'buku',
+    });
+    try {
+      let response = await fetch(urlDelete, {
+        method: 'DELETE',
+        body: body,
+      });
+      let resJson = await response.json();
+
+      if (resJson.errors !== null && resJson.errors?.length > 0) {
+        throw new Error('Hapus buku gagal, coba lagi lain waktu');
+      }
+
+      setError({
+        isError: false,
+        error: '',
+      });
+      window.location.replace('/semua-buku');
+    } catch (err) {
+      setError({
+        isError: true,
+        error: err.toString(),
+      });
+      console.log(err);
+    }
+  };
+
   const handleSubmitEnd = (values) => {
     const convertedData = { ...values };
     convertedData.judul.tahun = +convertedData.judul.tahun;
@@ -198,10 +233,22 @@ const EditBuku = () => {
               {bukuData?.judul?.judul}
             </span>
           </Typography>
-
-          <Button variant="contained" onClick={() => setIsOpen(true)}>
-            Edit ID Buku
-          </Button>
+          <div className="button-group">
+            <Button
+              variant="contained"
+              onClick={() => setIsOpen(true)}
+              sx={{ marginRight: '5px' }}
+            >
+              Edit ID Buku
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpenDelete(true)}
+            >
+              Delete Buku
+            </Button>
+          </div>
         </div>
         <Divider style={{ margin: '0.5rem 0' }}></Divider>
         <form className="form-buku">
@@ -354,6 +401,24 @@ const EditBuku = () => {
           </LoadingButton>
         </form>
       </Container>
+      <ModalContainer
+        open={openDelete}
+        handleClose={() => setOpenDelete(false)}
+      >
+        <div className="container-delete-confirm">
+          <Typography variant="h6">
+            {`Apakah ingin delete buku ${bukuData.judul?.judul} ? Semua data peminjaman judul ini akan ikut terhapus`}
+          </Typography>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDeleteBuku}
+            fullWidth
+          >
+            KONFIRMASI
+          </Button>
+        </div>
+      </ModalContainer>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={afterSave}
@@ -363,10 +428,10 @@ const EditBuku = () => {
       </Snackbar>
       <Snackbar
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        open={error}
+        open={error.isError}
         autoHideDuration={2000}
       >
-        <Alert severity="error">Gagal menyimpan buku</Alert>
+        <Alert severity="error">{`Gagal melakukan proses ${error.error}`}</Alert>
       </Snackbar>
     </React.Fragment>
   );

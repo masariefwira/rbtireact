@@ -90,6 +90,7 @@ const SemuaBuku = () => {
       .then((res) => {
         if (res.data === null) {
           setBuku([]);
+          setIsLoading(false);
           return;
         }
         let temp = [...res.data];
@@ -97,7 +98,10 @@ const SemuaBuku = () => {
         setBuku(temp);
         setIsLoading(false);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setIsLoading(false);
+        console.log(err);
+      });
   };
 
   useEffect(() => {
@@ -266,6 +270,7 @@ const SemuaBuku = () => {
             handleRowPerPage={handleChangeRowsPerPage}
             page={page}
             rowsPerPage={rowsPerPage}
+            jenis={filterJenis}
           ></SemuaBukuTable>
         ) : (
           <Typography sx={{ mt: 3 }}>
