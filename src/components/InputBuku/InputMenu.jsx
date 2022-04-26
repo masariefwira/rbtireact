@@ -9,6 +9,8 @@ import {
 import React, { useState } from 'react';
 import InputBuku from './InputBuku';
 import InputLaporan from './InputLaporan';
+import InputJurnal from './InputJurnal';
+import InputArtikel from './InputArtikel';
 
 const InputMenu = () => {
   const [jenis, setJenis] = useState('Buku');
@@ -17,7 +19,28 @@ const InputMenu = () => {
     { value: 'Laporan PKL', label: 'Laporan PKL' },
     { value: 'Skripsi', label: 'Skripsi' },
     { value: 'Jurnal', label: 'Jurnal' },
+    { value: 'Artikel', label: 'Artikel' },
+    { value: 'Makalah', label: 'Makalah' },
+    { value: 'Prosiding', label: 'Prosiding' },
   ];
+
+  const JenisInput = () => {
+    if (jenis === 'Buku') {
+      return <InputBuku></InputBuku>;
+    } else if (jenis === 'Artikel') {
+      return <InputArtikel jenis = "1"></InputArtikel>;
+    } else if (jenis === 'Makalah') {
+      return <InputArtikel jenis = "2"></InputArtikel>;
+    } else if (jenis === 'Prosiding') {
+      return <InputJurnal jenis = "2"></InputJurnal>;
+    } else if (jenis === 'Jurnal') {
+      return <InputJurnal jenis = "1"></InputJurnal>;
+    } 
+    else {
+      return <InputLaporan></InputLaporan>;
+    }
+  };
+
   return (
     <React.Fragment>
       <Container className="form-buku__container">
@@ -48,11 +71,7 @@ const InputMenu = () => {
           })}
         </TextField>
         <Divider style={{ marginBottom: '1rem', marginTop: '1rem' }}></Divider>
-        {jenis === 'Buku' ? (
-          <InputBuku></InputBuku>
-        ) : (
-          <InputLaporan jenis={jenis}></InputLaporan>
-        )}
+        <JenisInput />
       </Container>
     </React.Fragment>
   );

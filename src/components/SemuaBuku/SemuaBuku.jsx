@@ -58,31 +58,65 @@ const SemuaBuku = () => {
   }, []);
 
   const fetchBuku = (isSearch) => {
+    console.log(`FILTER JENIS ${filterJenis}`)
     setIsLoading(true);
     let request = {};
-    console.log(isSearch);
-    if (isSearch) {
+    let url = ""
+
+    if (filterJenis !== "skripsi" && filterJenis !== "buku" && filterJenis !== "other") {
+      let jenis = ""
+
+      if (filterJenis === "artikel" || filterJenis === "jurnal") {
+        jenis = 1
+      } else {
+        jenis = 2
+      }
+
+      if (filterJenis === "jurnal" || filterJenis === "prosiding") {
+        url = process.env.REACT_APP_URL + '/api/paper/all';
+      } else {
+        url = process.env.REACT_APP_URL + '/api/karya_tulis/all';
+      }
+
       request = {
-        size: rowsPerPage,
-        from: rowsPerPage * page,
-        query: searchQuery,
-        jenis: filterJenis,
-      };
+        limit : rowsPerPage,
+        offset : rowsPerPage * page,
+        jenis
+      }
     } else {
-      request = {
-        size: rowsPerPage,
-        from: rowsPerPage * page,
-        jenis: filterJenis,
-      };
+      url = urlFilter
+      
+      if (isSearch) {
+        request = {
+          size: rowsPerPage,
+          from: rowsPerPage * page,
+          query: searchQuery,
+          jenis: filterJenis,
+        };
+      } else {
+        request = {
+          size: rowsPerPage,
+          from: rowsPerPage * page,
+          jenis: filterJenis,
+        };
+      }
+
+      if (filterJenis === "other") {
+        request = {
+          size: rowsPerPage,
+          from: rowsPerPage * page,
+          jenis: "jurnal",
+        };
+      } 
+  
+      console.log(filterKategori.map((item) => +item.id));
+  
+      if (filterKategori.length > 0) {
+        request['id_kategori'] = filterKategori.map((item) => +item.id);
+      }
     }
 
-    console.log(filterKategori.map((item) => +item.id));
-
-    if (filterKategori.length > 0) {
-      request['id_kategori'] = filterKategori.map((item) => +item.id);
-    }
-
-    fetch(urlFilter, {
+    fetch(url, {
       method: 'POST',
       body: JSON.stringify(request),
     })
@@ -107,6 +141,7 @@ const SemuaBuku = () => {
   useEffect(() => {
     fetchBuku();
   }, [page, rowsPerPage, filterKategori, kategori, filterJenis]);
+
 
   const handleKategoriChange = (e) => {
     setSelectedKategori(e.target.value);
@@ -140,6 +175,10 @@ const SemuaBuku = () => {
     { value: 'buku', label: 'Buku' },
     { value: 'jurnal', label: 'Jurnal' },
     { value: 'skripsi', label: 'Skripsi' },
+    { value: 'prosiding', label: 'Prosiding' },
+    { value: 'makalah', label: 'Makalah' },
+    { value: 'artikel', label: 'Artikel' },
+    { value: 'other', label: 'Lainnya' },
   ];
 
   const translatorKategori = (id, data) => {
@@ -175,6 +214,7 @@ const SemuaBuku = () => {
         <TextField
           placeholder="Cari berdasarkan judul..."
           fullWidth
+          disabled={filterJenis !== "skripsi" && filterJenis !== "buku"}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ mb: 2 }}
@@ -199,6 +239,7 @@ const SemuaBuku = () => {
             sx={{ width: '35%' }}
             select
             fullWidth
+            disabled={filterJenis !== "skripsi" && filterJenis !== "buku"}
             size="small"
             onChange={handleKategoriChange}
             InputProps={{

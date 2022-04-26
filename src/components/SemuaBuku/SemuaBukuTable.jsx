@@ -101,11 +101,166 @@ export default function SemuaBukuTable({
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data[0].count) : 0;
 
-  const navigate = useNavigate();
   let link = '/detail-buku/';
   if (jenis !== 'buku') {
     link = `/detail-laporan/${jenis}/`;
   }
+
+  let TableBuku = () => (
+     <React.Fragment>
+     <TableHead>
+    <TableRow>
+      <TableCell>Judul</TableCell>
+      <TableCell>Penulis</TableCell>
+      <TableCell>Penerbit</TableCell>
+      <TableCell>Tahun</TableCell>
+      <TableCell>Kategori</TableCell>
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    {data.map((row) => (
+      <TableRow
+        key={row.id}
+        onClick={() => window.open(link + `${row.id}`, '_blank')}
+        className="row-table-buku"
+      >
+        <TableCell scope="row" style={{ width: 160 }}>
+          {row.judul}
+        </TableCell>
+        <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
+        <TableCell style={{ width: 160 }}>{row.penerbit}</TableCell>
+        <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
+        <TableCell style={{ width: 160 }}>{row.kategori}</TableCell>
+      </TableRow>
+    ))}
+
+    {emptyRows > 0 && (
+      <TableRow style={{ height: 53 * emptyRows }}>
+        <TableCell colSpan={6} />
+      </TableRow>
+    )}
+  </TableBody>
+  </React.Fragment>
+  )
+
+  let TableSkripsi = () => (
+    <React.Fragment>
+    <TableHead>
+   <TableRow>
+     <TableCell>Judul</TableCell>
+     <TableCell>Penulis</TableCell>
+     <TableCell>Tahun</TableCell>
+     <TableCell>Kategori</TableCell>
+   </TableRow>
+ </TableHead>
+ <TableBody>
+   {data.map((row) => (
+     <TableRow
+       key={row.id}
+       onClick={() => window.open(link + `${row.id}`, '_blank')}
+       className="row-table-buku"
+     >
+       <TableCell scope="row" style={{ width: 160 }}>
+         {row.judul}
+       </TableCell>
+       <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
+       <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
+       <TableCell style={{ width: 160 }}>{row.kategori}</TableCell>
+     </TableRow>
+   ))}
+
+   {emptyRows > 0 && (
+     <TableRow style={{ height: 53 * emptyRows }}>
+       <TableCell colSpan={6} />
+     </TableRow>
+   )}
+ </TableBody>
+ </React.Fragment>
+ )
+
+ let TableArtikel = () => (
+  <React.Fragment>
+  <TableHead>
+ <TableRow>
+   <TableCell>Judul</TableCell>
+   <TableCell>Bagian Dari</TableCell>
+   <TableCell>Penulis</TableCell>
+   <TableCell>Tahun</TableCell>
+ </TableRow>
+</TableHead>
+<TableBody>
+ {data.map((row) => (
+   <TableRow
+     key={row.id}
+     onClick={() => window.open(link + `${row.id}`, '_blank')}
+     className="row-table-buku"
+   >
+     <TableCell scope="row" style={{ width: 160 }}>
+       {row.judul}
+     </TableCell>
+     <TableCell style={{ width: 160 }}>{row.judul_induk}</TableCell>
+     <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
+     <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
+   </TableRow>
+ ))}
+
+ {emptyRows > 0 && (
+   <TableRow style={{ height: 53 * emptyRows }}>
+     <TableCell colSpan={6} />
+   </TableRow>
+ )}
+</TableBody>
+</React.Fragment>
+)
+
+let TablePaper = () => (
+  <React.Fragment>
+  <TableHead>
+ <TableRow>
+   <TableCell>Judul</TableCell>
+   <TableCell>Volume</TableCell>
+   <TableCell>Tahun</TableCell>
+ </TableRow>
+</TableHead>
+<TableBody>
+ {data.map((row) => (
+   <TableRow
+     key={row.id}
+     onClick={() => window.open(link + `${row.id}`, '_blank')}
+     className="row-table-buku"
+   >
+     <TableCell scope="row" style={{ width: 160 }}>
+       {row.judul}
+     </TableCell>
+     <TableCell style={{ width: 160 }}>{row.volume}</TableCell>
+     <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
+   </TableRow>
+ ))}
+
+ {emptyRows > 0 && (
+   <TableRow style={{ height: 53 * emptyRows }}>
+     <TableCell colSpan={6} />
+   </TableRow>
+ )}
+</TableBody>
+</React.Fragment>
+)
+
+ let JenisDecider = () => {
+   if (jenis === "skripsi") {
+     console.log("SKRIPSI!")
+     return TableSkripsi()
+   }
+   else if (jenis === "artikel" || jenis === "makalah") {
+    return TableArtikel()
+   } else if (jenis === "prosiding" || jenis === "jurnal") {
+    return TablePaper()
+   }
+   else {
+    console.log("BUKAN SKRIPSI!")
+     return TableBuku()
+   }
+ }
 
   return (
     <TableContainer component={Paper} sx={{ mt: 2 }}>
@@ -113,38 +268,7 @@ export default function SemuaBukuTable({
         sx={{ minWidth: 500, minHeight: 500, maxHeight: 500 }}
         aria-label="custom pagination table"
       >
-        <TableHead>
-          <TableRow>
-            <TableCell>Judul</TableCell>
-            <TableCell>Penulis</TableCell>
-            <TableCell>Penerbit</TableCell>
-            <TableCell>Tahun</TableCell>
-            <TableCell>Kategori</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {data.map((row) => (
-            <TableRow
-              key={row.id}
-              onClick={() => window.open(link + `${row.id}`, '_blank')}
-              className="row-table-buku"
-            >
-              <TableCell scope="row" style={{ width: 160 }}>
-                {row.judul}
-              </TableCell>
-              <TableCell style={{ width: 160 }}>{row.penulis}</TableCell>
-              <TableCell style={{ width: 160 }}>{row.penerbit}</TableCell>
-              <TableCell style={{ width: 160 }}>{row.tahun}</TableCell>
-              <TableCell style={{ width: 160 }}>{row.kategori}</TableCell>
-            </TableRow>
-          ))}
-
-          {emptyRows > 0 && (
-            <TableRow style={{ height: 53 * emptyRows }}>
-              <TableCell colSpan={6} />
-            </TableRow>
-          )}
-        </TableBody>
+        <JenisDecider/>
         <TableFooter>
           <TableRow>
             <TablePagination

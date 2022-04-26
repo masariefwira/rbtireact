@@ -14,6 +14,8 @@ import { LoadingButton } from '@mui/lab';
 
 import * as Yup from 'yup';
 import { ThemeCustomContext } from './../../util/theme-context';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const bukuSchema = Yup.object().shape({
   judul: Yup.object().shape({
@@ -61,7 +63,7 @@ const InputBuku = () => {
       judul: '',
       tahun: '',
       penerbit: '',
-      penulis: '',
+      penulis: [''],
       bahasa: '',
       jenis: '',
       id_kategori: '',
@@ -86,8 +88,6 @@ const InputBuku = () => {
       setTimeout(() => setAfterSave(false), 3000);
     }
   }, [afterSave]);
-
-  console.log(formik.errors);
 
   const url = process.env.REACT_APP_URL + '/api/kategori';
   const urlSubmit = process.env.REACT_APP_URL + '/api/buku';
@@ -182,7 +182,7 @@ const InputBuku = () => {
           judul: '',
           tahun: '',
           penerbit: '',
-          penulis: '',
+          penulis: [''],
           bahasa: '',
           jenis: '',
           id_kategori: '',
@@ -196,7 +196,7 @@ const InputBuku = () => {
           judul: '',
           tahun: '',
           penerbit: '',
-          penulis: '',
+          penulis: [''],
           bahasa: '',
           jenis: '',
           id_kategori: '',
@@ -226,8 +226,24 @@ const InputBuku = () => {
     formik.setValues({ ...formik.values, idBuku: data });
   };
 
+  const addPenulis = () => {
+    const data = [...formik.values.judul?.penulis];
+
+    data.push('');
+
+    let valueJudul = { ...formik.values.judul, penulis: data };
+    formik.setValues({ ...formik.values, judul: valueJudul });
+  };
+
+  const deletePenulis = (idx) => {
+    const data = [...formik.values.judul?.penulis];
+    data.splice(idx, 1);
+
+    let valueJudul = { ...formik.values.judul, penulis: data };
+    formik.setValues({ ...formik.values, judul: valueJudul });
+  };
+
   const dataToMap = [...kategoriData];
-  console.log(`FORMIK VALUES ${initialValues.idBuku}`);
   return (
     <React.Fragment>
       <form className="form-buku">
@@ -352,20 +368,38 @@ const InputBuku = () => {
               : null
           }
         />
-        <TextField
-          className="form-input__field"
-          value={formik.values.judul.penulis}
-          label="Penulis"
-          name="judul.penulis"
-          onChange={formik.handleChange}
-          error={formik.errors.judul?.penulis && formik.touched.judul?.penulis}
-          onBlur={formik.handleBlur}
-          helperText={
-            formik.errors.judul?.penulis && formik.touched.judul?.penulis
-              ? formik.errors.judul?.penulis
-              : null
-          }
-        />
+        {formik.values.judul.penulis.map((field, idx) => (
+          <TextField
+            className="form-input__field"
+            value={formik.values.judul.penulis[idx]}
+            label="Penulis"
+            name={`judul.penulis[${idx}]`}
+            onChange={formik.handleChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment>
+                  {idx > 0 ? (
+                    <IconButton onClick={() => deletePenulis(idx)}>
+                      <DeleteIcon sx={{ color: 'red' }} />
+                    </IconButton>
+                  ) : null}
+                  {idx < 2 ? (
+                    <Button onClick={addPenulis}>Add Penulis</Button>
+                  ) : null}
+                </InputAdornment>
+              ),
+            }}
+            error={
+              formik.errors.judul?.penulis && formik.touched.judul?.penulis
+            }
+            onBlur={formik.handleBlur}
+            helperText={
+              formik.errors.judul?.penulis && formik.touched.judul?.penulis
+                ? formik.errors.judul?.penulis
+                : null
+            }
+          />
+        ))}
         <TextField
           className="form-input__field"
           value={formik.values.judul.tahun}
