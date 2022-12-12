@@ -22,7 +22,7 @@ const InputMahasiswa = () => {
     nama: '',
     nomor_telp: '',
     email: '',
-    angkatan: '',
+    angkatan:'',
   };
 
   const themeCustom = useContext(ThemeCustomContext);
@@ -58,6 +58,7 @@ const InputMahasiswa = () => {
       nomor_telp: e.nomor_telp,
       email: e.email,
       angkatan: parseInt(e.angkatan),
+      
     });
 
     fetch(url, {

@@ -31,10 +31,11 @@ const bukuSchema = Yup.object().shape({
       .max(100, 'Penerbit terlalu panjang, max 100 huruf')
       .required('Penerbit tidak boleh kosong!'),
 
-    penulis: Yup.string()
-      .min(4, 'Penulis terlalu pendek, minimal 5 huruf')
-      .max(100, 'Penulis terlalu panjang, max 100 huruf')
-      .required('Penulis tidak boleh kosong!'),
+    penulis: Yup.array().of(Yup.string()
+    .min(4, 'Penulis terlalu pendek, minimal 5 huruf')
+    .max(100, 'Penulis terlalu panjang, max 100 huruf')
+    .required('Penulis tidak boleh kosong!')),
+
 
     bahasa: Yup.string()
       .min(4, 'Bahasa terlalu pendek, minimal 5 huruf')
@@ -63,7 +64,7 @@ const InputBuku = () => {
       judul: '',
       tahun: '',
       penerbit: '',
-      penulis: [''],
+      penulis: [""],
       bahasa: '',
       jenis: '',
       id_kategori: '',
@@ -471,7 +472,7 @@ const InputBuku = () => {
         open={error.isError}
         autoHideDuration={2000}
       >
-        <Alert severity="error">{`Gagal menyimpan buku ${error.error.toString()}`}</Alert>
+        {/* <Alert severity="error">{`Gagal menyimpan buku ${error.error.toString()}`}</Alert> */}
       </Snackbar>
     </React.Fragment>
   );
