@@ -64,7 +64,7 @@ const InputBuku = () => {
       judul: '',
       tahun: '',
       penerbit: '',
-      penulis: [""],
+      penulis: [''],
       bahasa: '',
       jenis: '',
       id_kategori: '',
@@ -145,7 +145,19 @@ const InputBuku = () => {
     } else {
       convertedData.jumlah = +convertedData.jumlah;
     }
-    const data = JSON.stringify(convertedData);
+    
+    // convertedData.judul.penulis=+convertedData.judul.penulis.join()
+    // const data = { ...convertedData };
+    // data.judul.penulis=data.judul.penulis.join();
+    const data22 = JSON.stringify(convertedData);
+    var stringify = JSON.parse(data22);
+    stringify.judul.penulis = stringify.judul.penulis.join();
+    // console.log(stringify);
+    const data = JSON.stringify(stringify);
+    // var stringify = JSON.parse(data22);
+    // for (var i = 0; i < stringify.length; i++) {
+    //     console.log(stringify[i]['penulis']);}
+    // console.log(data.penulis)
     setIsLoading(true);
     fetch(urlSubmit, {
       method: 'PATCH',
@@ -472,7 +484,7 @@ const InputBuku = () => {
         open={error.isError}
         autoHideDuration={2000}
       >
-        {/* <Alert severity="error">{`Gagal menyimpan buku ${error.error.toString()}`}</Alert> */}
+        <Alert severity="error">{`Gagal menyimpan buku ${error.error.toString()}`}</Alert>
       </Snackbar>
     </React.Fragment>
   );

@@ -19,7 +19,14 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import InputMahasiswa from '../InputMahasiswa/InputMahasiswa';
 import * as Yup from 'yup';
 
+
 const InputLaporan = ({ jenis: jenisBuku }) => {
+  // const hello = (e) => {
+  //   console.log(e.target.value)
+  //   return e.target.value;
+  // }
+  // hello(e)
+  console.log(Request)
   const [afterSave, setAfterSave] = useState(false);
   const [error, setError] = useState({
     isError: false,
@@ -84,6 +91,7 @@ const InputLaporan = ({ jenis: jenisBuku }) => {
       jenis: jenisBuku,
       judul: values.judul,
     });
+    console.log(jenisBuku);
 
     fetch(url, {
       body: body,
