@@ -30,6 +30,7 @@ const DetailBuku = (props) => {
     })
       .then((res) => res.json())
       .then((res) => {
+        console.log('this is res',res)
         let data = [...res['data']];
         setDetailBuku(data[0]);
         console.log(data[0]);

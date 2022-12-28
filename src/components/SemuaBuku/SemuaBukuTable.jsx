@@ -110,6 +110,7 @@ export default function SemuaBukuTable({
      <React.Fragment>
      <TableHead>
     <TableRow>
+      <TableCell>ID</TableCell>
       <TableCell>Judul</TableCell>
       <TableCell>Penulis</TableCell>
       <TableCell>Penerbit</TableCell>
@@ -124,6 +125,7 @@ export default function SemuaBukuTable({
         onClick={() => window.open(link + `${row.id}`, '_blank')}
         className="row-table-buku"
       >
+        <TableCell style={{ width: 160 }}>{row.id}</TableCell>
         <TableCell scope="row" style={{ width: 160 }}>
           {row.judul}
         </TableCell>
